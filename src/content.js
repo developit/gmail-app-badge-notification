@@ -1,12 +1,12 @@
+let observer;
 (() => {
-  let desc = Object.getOwnPropertyDescriptor(Document.prototype, 'title');
-  Object.defineProperty(Document.prototype, 'title', {
-    configurable: true,
-    set(v) {
-      let m = String(v).match(/Inbox(?: \((\d+)\))? -/);
+    observer = new MutationObserver(function(mutations) {
+      const m = String(mutations[0].target.innerText).match(/Inbox(?: \((\d+)\))? -/);
       if (m) navigator.setAppBadge((m[1]|0) || null);
-      desc.set.call(this, v);
-    },
-    get() { return desc.get.call(this); }
-  });
+    });
+    observer.observe(
+      document.querySelector('title'),
+      { subtree: true, characterData: true, childList: true }
+    );
 })();
+
